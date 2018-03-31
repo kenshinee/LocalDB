@@ -1,10 +1,22 @@
-LocalDB = function () {
+/*!
+ * localdb v0.1
+ *
+ * Copyright 2018 kenshinee
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Making this world a better place, one code at a time @kenshinee
+ *
+ * A local file system using indexedDB. Mainly used to store large files and speeding up access
+ */
+ 
+ LocalDB = function () {
 	
 	var obj = {};
 	
-	var _DBName = "shipDB10";
+	var _DBName = "DB";
 	var _DBVersion = 1.0;
-	var _DBTable = "ships";	
+	var _DBTable = "Table";	
 	var db;
 	
 	
@@ -19,8 +31,7 @@ LocalDB = function () {
 		_DBTable = DBTable;
 		
 		var request = indexedDB.open(_DBName, _DBVersion),
-			createObjectStore = function (dataBase) {
-				console.log("Creating objectStore")
+			createObjectStore = function (dataBase) {				
 				dataBase.createObjectStore(_DBTable);
 			}
 			
@@ -67,8 +78,7 @@ LocalDB = function () {
 		xhr.responseType = "blob";
 
 		xhr.addEventListener("load", function () {
-			if (xhr.status === 200) {
-				console.log("Image retrieved");
+			if (xhr.status === 200) {				
 				blob = xhr.response;
 				var transaction = db.transaction([_DBTable], "readwrite");
 				var put = transaction.objectStore(_DBTable).put(blob, name);
@@ -81,21 +91,18 @@ LocalDB = function () {
 	obj.getFile = function(name, filename, callback)  {
 		var transaction = db.transaction([_DBTable], "readwrite");
 		transaction.objectStore(_DBTable).get(name).onsuccess = function (event) {
-			var imgFile = event.target.result;
+			var file = event.target.result;
 			var URL = window.URL || window.webkitURL;
-			var imgURL = null;
-			if (imgFile) {
-				
-				imgURL = URL.createObjectURL(imgFile);
-				console.log("loading from database");
-				callback(imgURL);
+			var fileURL = null;
+			if (file) {				
+				fileURL = URL.createObjectURL(File);
+				callback(fileURL);
 				
 			} else {
 				
 				loadFile(name, filename, function(blob) {
-					imgURL = URL.createObjectURL(blob);
-					console.log("loading from server");
-					callback(imgURL);	
+					fileURL = URL.createObjectURL(blob);					
+					callback(fileURL);	
 				}); 			
 			}
 		};
